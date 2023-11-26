@@ -39,7 +39,7 @@ $$  x_{ij} =
 Le problème de plus court chemin dans le cas statique peut se formuler de la façon suivante:
 
 \begin{align}
-    \min_{x \in \{0,1\}^{|A|}} & \sum_{(i,j) \in A} d_{ij} x_{ij} && \notag \\
+    \min_{x \in \{0,1\}^{|A|}} & \sum_{ij \in A} d_{ij} x_{ij} && \notag \\
     \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1, && \forall i \in V \setminus{\{s,t\}}, \label{eq:constraint1} \\
     &\sum_{i: ij \in A} x_{ij} \leq 1, && \forall j \in V \setminus{\{s,t\}}, \label{eq:constraint2} \\
     &\sum_{i: is \in A} x_{is} = 0, \label{eq:constraint3} \\
@@ -61,18 +61,144 @@ Enfin, (\ref{eq:constraint7}) assure que le poids du chemin considéré est inf�
 
 \subsection{Question 1.2 : Modélisation du problème robuste}
 
-Pour le problème robuste, le paramètre $d$ est désormais aléatoire avec:
+Pour le problème robuste, le paramètre $d$ peut désormais prendre des valeurs dans:
 \[
-d \in \mathcal{U}^{1} := \left\{(d^{1}_{ij} = d_{ij}(1 + \delta^{1}_{ij}))_{ij \in A} \ \middle|\ \ \sum_{ij \in A} \delta^{1}_{ij} \leq d^{1}, \delta^{1}_{ij} \in [0, D_{ij}] \ \forall ij \in A\right\}
+d \in \mathcal{U}^{1} := \left\{(d^{1}_{ij} = d_{ij}(1 + \delta^{1}_{ij}))_{ij \in A} \ \middle|\ \ \sum_{ij \in A} \delta^{1}_{ij} \leq d_1, \delta^{1}_{ij} \in [0, D_{ij}] \ \forall ij \in A\right\}.
 \]
+De même, le paramètre $p$ peut désormais prendre des valeurs dans:
+\[
+p \in \mathcal{U}^{2} := \left\{(p^{2}_{i} = p_{i} + \delta^{2}_{i} \hat{p_i})_{i \in V} \ \middle|\ \ \sum_{i \in V} \delta^{2}_{i} \leq d_2, \delta^{2}_{i} \in [0, 2] \ \forall i \in V\right\}.
+\]
+En prenant en compte cette nouvelle modélisation, la fonction objectif devient:
+$$\sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij}.$$
+Du côté des contraintes, seule la contrainte (\ref{eq:constraint7}) est affectée par l'incertitude sur $p$. Cette contrainte se réécrit:
+$$\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S.$$
+Les autres contraintes (\ref{eq:constraint1}) à (\ref{eq:constraint6}) ne sont pas affectées par cette nouvelle modélisation.
+\\
+\\
+La modélisation robuste partant du principe que la réalisation de l'incertitude observée est le pire cas possible, l'objectif du problème devient donc en mettant tout bout à bout:
+
+\begin{align}
+  \min_{x \in \{0,1\}^{|A|}} \max_{\delta^{1} \geq 0} & \sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij} && \notag \\
+  \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1, && \forall i \in V \setminus{\{s,t\}} \notag \\
+  &\sum_{i: ij \in A} x_{ij} \leq 1, && \forall j \in V \setminus{\{s,t\}} \notag\\
+  &\sum_{i: is \in A} x_{is} = 0, \notag \\
+  &\sum_{j: sj \in A} x_{sj} = 1, \notag \\
+  &\sum_{i: ip \in A} x_{ip} = 1, \notag \\
+  &\sum_{j: pj \in A} x_{pj} = 0, \notag \\
+  &\sum_{ij \in A} \delta_{ij}^{1} \leq d_1, \\
+  &\delta_{ij}^{1} \leq D_{ij}, && \forall ij \in A \\
+  &\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S, && \forall \delta^{2} \geq 0: 
+  \begin{cases}
+    \sum_{i \in V} \delta^{2}_{i} \leq d_2 \\
+    \delta^{2}_{i} \leq 2, \forall i \in V 
+  \end{cases}
+     \label{eq:contrainte_robuste}.
+\end{align}
 
 
 
-\subsection{Question 1.3}
 
-\subsection{Question 1.4}
+\subsection{Question 1.3 : Résolution par plans coupants et LazyCallback}
+
+\subsection{Question 1.4 : Résolution par dualisation}
+
+\subsubsection{Reformulation de l'objectif}
+
+L'objectif du problème robuste de la Question 1.2 peut se reformuler:
+$$ \min_{x \in \{0,1\}^{|A|}} \left\{ \sum_{ij \in A} d_{ij} x_{ij} + \max_{\delta^{1} \geq 0} d_{ij} \delta_{ij}^{1} x_{ij} \right\},$$
+auquel s'ajoute les contraintes de la Question 1.2.
+
+\subsubsection{Sous problème lié à $\delta^{1}$}
+
+Le problème interne lié aux variables $\delta^{1}_{ij}$ est donc:
+
+\begin{align}
+  \max_{\delta^{1}\geq 0} & \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} \tag{SP1} \label{eq:sous-pb-delta1}  \\
+  \textbf{s.t: } &\sum_{ij \in A} \delta_{ij}^{1} \leq d_1, \notag \\
+  &\delta_{ij}^{1} \leq D_{ij}, && \forall ij \in A \notag
+\end{align}
+
+\subsubsection{Dualisation du sous problème lié à $\delta^{1}$}
+
+Nous allons attribuer la variable duale $\alpha \geq 0$ à la première contrainte de (\ref{eq:sous-pb-delta1}). Nous attribuerons aussi aux constraintes indéxées par $A$ les variables duales $\beta_{ij} \geq 0$.
+\\
+\\
+Le problème (\ref{eq:sous-pb-delta1}) est linéaire et admet une solution admissible triviale telle que $\forall ij, \delta^{1}_{ij} = 0$. Par dualité forte, ce problème peut se réécrire:
+\begin{align}
+  \min_{\alpha, \beta \geq 0} & \alpha d_1  + \sum_{ij \in A} \beta_{ij} D_{ij} \tag{D-SP1} \label{eq:dual-sous-pb-delta1}  \\
+  \textbf{s.t: } &d_{ij} x_{ij} \leq \alpha + \beta_{ij}, && \forall ij \in A \notag
+\end{align}
+
+\subsubsection{Reformulation de la contrainte robuste}
+
+La contrainte robuste (\ref{eq:contrainte_robuste}), se réécrit:
+
+\begin{equation}
+\label{eq:ref_contrainte_robuste}
+  \sum_{ij \in A} x_{ij}(p_i + p_j) + p_s + p_t +  (\delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j} + \delta_{s}^{2} \hat{p_s} + \delta_{t}^{2} \hat{p_t}) \leq 2S,\ \forall \delta^{2} \geq 0: 
+\begin{cases}
+  \sum_{i \in V} \delta^{2}_{i} \leq d_2 \\
+  \delta^{2}_{i} \leq 2, \forall i \in V 
+\end{cases} 
+\end{equation}
 
 
+\subsubsection{Sous problème lié à $\delta^{2}$}
+
+Le fait que la contrainte (\ref{eq:ref_contrainte_robuste}) doivent être vérifié pour tout $\delta^{2}$ peut se réécrire en faisant apparaître un problème de maximisation sur $\delta^{2}$.
+\begin{align}
+  \sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + 
+    \max_{\delta^{2} \geq 0} & \sum_{ij \in A} x_{ij}(\delta^{2}_{i} \hat{p_i} + \delta^{2}_{j} \hat{p_j}) + \delta^{2}_{s} \hat{p_s} + \delta^{2}_{t} \hat{p_t} \leq 2S \\
+     \textbf{s.t: } & \sum_{i \in V} \delta^{2}_{i} \leq d_2 \notag \\
+     & \delta^{2}_{i} \leq 2, && \forall i \in V \notag
+\end{align}
+
+
+\subsubsection{Dualisation du sous problème lié à $\delta^{2}$}
+
+Réécrivons le sous-problème sur la variable $\delta^{2}$ ci-dessus:
+
+\begin{align}
+    \max_{\delta^{2} \geq 0} & \sum_{ij \in A} x_{ij}(\delta^{2}_{i} \hat{p_i} + \delta^{2}_{j} \hat{p_j}) + \delta^{2}_{s} \hat{p_s} + \delta^{2}_{t} \hat{p_t} \tag{SP2} \label{eq:sous-prob-2}\\
+     \textbf{s.t: } & \sum_{i \in V} \delta^{2}_{i} \leq d_2 \notag \\
+     & \delta^{2}_{i} \leq 2, && \forall i \in V \notag
+\end{align}
+
+Dans le problème de maximisation (\ref{eq:sous-prob-2}), nous attribuerons à la première contrainte la variable duale $\gamma \geq 0$, ainsi que les variables duales $\sigma_{i}$ pour les contraintes indexées par $V$. En dualisant ce problème, nous obtenons:
+\begin{align}
+  \min_{\gamma, \sigma \geq 0} & \gamma d_2 + 2 \sum_{i \in V} \sigma_i \tag{D-SP2} \label{eq:dual-sous-prob-2}\\
+   \textbf{s.t: } & \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i \notag \\
+   & \sum_{j: sj \in A} x_{sj} \hat{p_s} + \hat{p_s} \leq \gamma + \sigma_s \notag \\
+   & \sum_{j: jt \in A} x_{jt} \hat{p_t} + \hat{p_t} \leq \gamma + \sigma_t \notag
+\end{align}
+Ainsi, la contrainte (\ref{eq:contrainte_robuste}) est vérifiée si et seulement si: 
+$$\exists \gamma, \sigma \geq 0 : 
+\begin{cases}
+  \sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + \gamma d_2 + 2 \sum_{i \in V} \sigma_i  \leq 2S\\
+  \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i, \ \forall i \in V \setminus{\{s,t\}}  \\
+   \sum_{j: sj \in A} x_{sj} \hat{p_s} + \hat{p_s} \leq \gamma + \sigma_s  \\
+   \sum_{j: jt \in A} x_{jt} \hat{p_t} + \hat{p_t} \leq \gamma + \sigma_t 
+\end{cases}
+$$
+
+\subsubsection{Reformulation du problème robuste}
+
+En mettant ensemble les deux reformulations des sous-problèmes sur les variables $\delta^{1}$ et $\delta^{2}$ obtenues précédemment, le problème robuste se reformule en:
+
+\begin{align}
+  \min_{x, \alpha, \beta, \gamma, \sigma} & \ \ \ \sum_{ij \in A} d_{ij} x_{ij} + \alpha d_1 + \sum_{ij \in A} \beta_{ij} D_{ij} && \notag \\
+  \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1, && \forall i \in V \setminus{\{s,t\}} \notag \\
+  &\sum_{i: ij \in A} x_{ij} \leq 1, && \forall j \in V \setminus{\{s,t\}} \notag\\
+  &\sum_{i: is \in A} x_{is} = 0, \notag \\
+  &\sum_{j: sj \in A} x_{sj} = 1, \notag \\
+  &\sum_{i: ip \in A} x_{ip} = 1, \notag \\
+  &\sum_{j: pj \in A} x_{pj} = 0, \notag \\
+  &\sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + \gamma d_2 + 2 \sum_{i \in V} \sigma_i  \leq 2S \notag \\
+  & \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i, && \forall i \in V \setminus{\{s,t\}} \\
+  & \sum_{j: sj \in A} x_{sj} \hat{p_s} + \hat{p_s} \leq \gamma + \sigma_s \\
+  & \sum_{j: jt \in A} x_{jt} \hat{p_t} + \hat{p_t} \leq \gamma + \sigma_t
+\end{align}
 
 
 
