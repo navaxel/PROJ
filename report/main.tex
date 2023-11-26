@@ -1,0 +1,112 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[margin=1in]{geometry} %pour eviter d'avoir des marges ridicules
+\usepackage{mathtools,amsmath,amsthm,amssymb,amsmath}
+\usepackage{placeins}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{natbib}
+\usepackage{bm}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage[table]{xcolor}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\title{PROJ - Calcul de Plus Court Chemin Robuste}
+\author{Arthur Divanovic, Axel Navarro}
+
+\begin{document}
+
+\maketitle
+
+
+
+\newpage
+\tableofcontents
+
+\newpage 
+\section{Exercice 1: Modélisation Papier}
+
+\subsection{Question 1.1: Modélisation du problème statique}
+
+Pour modéliser le problème statique, nous allons attribuer les variables de décision $x$ à chaque arête $ij \in A$ telles que:
+$$  x_{ij} = 
+\begin{cases}
+  1 \text{, si l'arête $ij$ est sélectionnée} \\
+    0 \text{ sinon}
+\end{cases}$$
+Le problème de plus court chemin dans le cas statique peut se formuler de la façon suivante:
+
+\begin{align}
+    \min_{x \in \{0,1\}^{|A|}} & \sum_{(i,j) \in A} d_{ij} x_{ij} && \notag \\
+    \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1, && \forall i \in V \setminus{\{s,t\}}, \label{eq:constraint1} \\
+    &\sum_{i: ij \in A} x_{ij} \leq 1, && \forall j \in V \setminus{\{s,t\}}, \label{eq:constraint2} \\
+    &\sum_{i: is \in A} x_{is} = 0, \label{eq:constraint3} \\
+    &\sum_{j: sj \in A} x_{sj} = 1, \label{eq:constraint4} \\
+    &\sum_{i: ip \in A} x_{ip} = 1, \label{eq:constraint5} \\
+    &\sum_{j: pj \in A} x_{pj} = 0, \label{eq:constraint6} \\
+    &\sum_{ij \in A} x_{ij}(p_i + p_j) + p_s + p_t \leq 2S. \label{eq:constraint7}
+\end{align}
+Étant donné le choix des variables $x$, la longueur d'un chemin s'écrit bien $\sum_{(i,j) \in A} d_{i,j} x_{i,j}$, qui est la somme des coûts d'emprunt des arêtes sélectionnées. Il reste à s'assurer que un tell choix de $x$ définit bien un chemin de $s$ à $t$.
+\\
+\\
+La contrainte (\ref{eq:constraint1}) assure que pour tout sommet $i$ différent de $s$ ou $t$, au plus une arête sélectionnée se termine en $i$. La contrainte (\ref{eq:constraint2}) assure de même que pour tout sommet différent de $s$ ou $t$, au plus une arête sélectionnée débute en ce sommet.
+\\
+\\
+Les chemins admissibles commençant par $s$, la contrainte (\ref{eq:constraint3}) assure que aucune arête sélectionnée n'arrive en $s$ et (\ref{eq:constraint4}) assure que exactement une arête partant de $s$ est selectionnée. De même, les chemins se terminent en $p$, ce qui est assuré par (\ref{eq:constraint5}) et (\ref{eq:constraint6}).
+\\
+\\
+Enfin, (\ref{eq:constraint7}) assure que le poids du chemin considéré est inférieur à $S$. Le facteur 2 provient du fait que l'on somme deux fois les poids des sommets $i$ différents de $s$ et $t$.
+
+\subsection{Question 1.2 : Modélisation du problème robuste}
+
+Pour le problème robuste, le paramètre $d$ est désormais aléatoire avec:
+\[
+d \in \mathcal{U}^{1} := \left\{(d^{1}_{ij} = d_{ij}(1 + \delta^{1}_{ij}))_{ij \in A} \ \middle|\ \ \sum_{ij \in A} \delta^{1}_{ij} \leq d^{1}, \delta^{1}_{ij} \in [0, D_{ij}] \ \forall ij \in A\right\}
+\]
+
+
+
+\subsection{Question 1.3}
+
+\subsection{Question 1.4}
+
+
+
+
+
+\newpage
+
+\section{Exercice 2: Résolution Numérique}
+
+\subsection{Question 2.1}
+
+\subsection{Question 2.2}
+
+\subsection{Question 2.3}
+
+
+
+
+\newpage
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+
+
+\vspace{2cm}
+Le code correspondant à ce projet est disponible sur le lien GitHub ci-dessous:
+\\
+\begin{center}
+https://github.com/ArthurDivanovic/
+\end{center}
+
+
+
+\newpage
+\bibliography{Bibliography.bib}
+\bibliographystyle{plainnat} %pour la bibliography
+% \bibliographystyle{unsrt}
+
+\end{document}
