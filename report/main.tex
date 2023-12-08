@@ -79,27 +79,88 @@ Les autres contraintes (\ref{eq:constraint1}) à (\ref{eq:constraint6}) ne sont 
 La modélisation robuste partant du principe que la réalisation de l'incertitude observée est le pire cas possible, l'objectif du problème devient donc en mettant tout bout à bout:
 
 \begin{align}
-  \min_{x \in \{0,1\}^{|A|}} \max_{\delta^{1} \geq 0} & \sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij} && \notag \\
-  \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1, && \forall i \in V \setminus{\{s,t\}} \notag \\
-  &\sum_{i: ij \in A} x_{ij} \leq 1, && \forall j \in V \setminus{\{s,t\}} \notag\\
-  &\sum_{i: is \in A} x_{is} = 0, \notag \\
-  &\sum_{j: sj \in A} x_{sj} = 1, \notag \\
-  &\sum_{i: ip \in A} x_{ip} = 1, \notag \\
-  &\sum_{j: pj \in A} x_{pj} = 0, \notag \\
-  &\sum_{ij \in A} \delta_{ij}^{1} \leq d_1, \\
-  &\delta_{ij}^{1} \leq D_{ij}, && \forall ij \in A \\
-  &\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S, && \forall \delta^{2} \geq 0: 
-  \begin{cases}
-    \sum_{i \in V} \delta^{2}_{i} \leq d_2 \\
-    \delta^{2}_{i} \leq 2, \forall i \in V 
-  \end{cases}
-     \label{eq:contrainte_robuste}.
+  \min_{x \in \{0,1\}^{|A|}} \max_{\delta^{1} \geq 0 \hspace{3px}\delta^{2} \geq 0} & \sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij} && \notag \\
+  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \notag \\
+  &\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S \notag\\
+  &\sum_{ij \in A} \delta_{ij}^{1} \leq d_1, \label{eq:constraint8} \\
+  &\sum_{i \in V} \delta^{2}_{i} \leq d_2 \label{eq:constraint9} \\
+  &\delta_{ij}^{1} \leq D_{ij}, & \forall ij \in A \label{eq:constraint10} \\
+  &\delta^{2}_{i} \leq 2, & \forall i \in V \label{eq:constraint11}
 \end{align}
 
 
-
-
 \subsection{Question 1.3 : Résolution par plans coupants et LazyCallback}
+
+\subsubsection{Reformulation de l'objectif}
+
+En posant $\eta$ une nouvelle variable tel que :
+
+\begin{align}
+  \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} \notag
+\end{align}
+
+On peut reformuler l'objectif du problème robuste : 
+
+\begin{align}
+  \min_{x, \hspace{1px} \delta^{1}, \hspace{1px} \delta^{2}, \hspace{1px} \eta} & \sum_{ij \in A} d_{ij} x_{ij} + \eta && \notag \\
+  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \quad (\ref{eq:constraint7}) \quad (\ref{eq:constraint8}) \quad (\ref{eq:constraint9}) \quad (\ref{eq:constraint10}) \quad (\ref{eq:constraint11})\notag \\
+  & \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} \label{eq:constraint12} \\
+  & \delta^{1}, \hspace{1px} \delta^{2}, \hspace{1px} \eta \geq 0 \notag \\
+  & x \in \{0,1\}^{|A|} \notag
+\end{align}
+
+\subsubsection{Définition initale de $\mathcal{U}^{1*}$ et $\mathcal{U}^{2*}$}
+
+Pour la resolution par plans coupants, nous devons définir les ensembles $\mathcal{U}^{1*}$ et $\mathcal{U}^{2*}$ qui seront initialement considérés.
+Nous les choisissons vides : 
+
+\begin{align}
+  \mathcal{U}^{1*} = \emptyset \quad \quad \quad \mathcal{U}^{2*} = \emptyset \notag
+\end{align}
+
+\subsubsection{Sous-problèmes}
+Le problème maitre s'écrit :
+
+\begin{align}
+  \min_{x, \hspace{1px} \eta } & \sum_{ij \in A} d_{ij} x_{ij} + \eta && \tag{MP} \label{eq:master-problem} \\
+  \textbf{s.t: } & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \notag \\
+  & \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} & \forall \delta^{1} \in \mathcal{U}^{1*} \\
+  & \sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S & \forall \delta^{2} \in \mathcal{U}^{2*} \\
+  & \eta \geq 0 \notag \\
+  & x \in \{0,1\}^{|A|} \notag
+\end{align}
+
+La résolution de (\ref{eq:master-problem}) nous donne une solution ($x^*, \eta^*$)
+
+On résout ensuite les deux sous-problèmes (\ref{eq:sous-pb-a}) et (\ref{eq:sous-pb-b}): 
+\begin{align}
+  \max_{\delta^{1} \geq 0} & \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x^*_{ij} - \eta^* \tag{SP-A} \label{eq:sous-pb-a}\\
+  \textbf{s.t: } & \sum_{ij \in A} \delta_{ij}^{1} \leq d_1 \notag \\
+  &\delta_{ij}^{1} \leq D_{ij}, & \forall ij \in A \notag \\
+\end{align}
+
+\begin{align}
+  \max_{\delta^{2} \geq 0} & \sum_{ij \in A} x^*_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} - 2S \tag{SP-B} \label{eq:sous-pb-b}\\
+  \textbf{s.t: } & \sum_{i \in V} \delta^{2}_{i} \leq d_2 \notag \\
+  &\delta^{2}_{i} \leq 2, & \forall i \in V \notag
+\end{align}
+
+La résolution de (\ref{eq:sous-pb-a}) et (\ref{eq:sous-pb-b}) nous donne deux solutions optimales $\delta^{1*}$ et $\delta^{2*}$. \\
+\\
+Si la valeur optimale de l'objectif de (\ref{eq:sous-pb-a}) est strictement positive, alors on ajoute $\delta^{1*}$ à $\mathcal{U}^{1*}$. \\
+Si la valeur optimale de l'objectif de (\ref{eq:sous-pb-b}) est strictement positive, alors on ajoute $\delta^{2*}$ à $\mathcal{U}^{2*}$.
+
+\subsubsection{Condition d'optimalité du problème maitre}
+Une solution du problème maitre ($x^*, \eta^*$) est optimale si la valeur optimale de l'objectif de (\ref{eq:sous-pb-a}) et (\ref{eq:sous-pb-b}) est négative pour ($x^*, \eta^*$).
+
+\subsubsection{Coupes ajoutées}
+
+Pour un  $\delta^{1*}$ et $\delta^{2*}$ ajoutés respectivement aux ensembles $\mathcal{U}^{1*}$ et $\mathcal{U}^{2*}$. Les coupes du problème maitre sont de la forme : 
+\begin{align}
+  & \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1*} x_{ij} \notag \\
+  & \sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2*} \hat{p_i} + \delta_{j}^{2*} \hat{p_j}) + p_s + \delta_{s}^{2*} \hat{p_s} + p_t + \delta_{t}^{2*} \hat{p_t} \leq 2S \notag
+\end{align}
+
 
 \subsection{Question 1.4 : Résolution par dualisation}
 

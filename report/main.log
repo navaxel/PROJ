@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.26)  26 NOV 2023 13:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.25)  8 DEC 2023 15:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/adivanovic/Desktop/X/X-4A/MPRO/PROJ/RobustShortestPath/report/main.tex
-(/Users/adivanovic/Desktop/X/X-4A/MPRO/PROJ/RobustShortestPath/report/main.tex
+**/Users/axelnavarro/Documents/4A/PROJ/RobustShortestPath/report/main.tex
+(/Users/axelnavarro/Documents/4A/PROJ/RobustShortestPath/report/main.tex
 LaTeX2e <2022-11-01> patch level 1
 L3 programming layer <2023-02-22> (/usr/local/texlive/2023/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
@@ -427,38 +427,54 @@ Underfull \hbox (badness 10000) in paragraph at lines 75--80
  []
 
 [4]
-Underfull \hbox (badness 10000) in paragraph at lines 124--128
+Underfull \hbox (badness 10000) in paragraph at lines 148--152
 
  []
 
 [5]
-Overfull \hbox (18.11372pt too wide) in paragraph at lines 187--188
+Underfull \hbox (badness 10000) in paragraph at lines 185--189
+
+ []
+
+
+LaTeX Warning: Reference `eq:contrainte_robuste' on page 6 undefined on input line 196.
+
+[6]
+
+LaTeX Warning: Reference `eq:contrainte_robuste' on page 7 undefined on input line 236.
+
+
+Overfull \hbox (18.11372pt too wide) in paragraph at lines 248--249
 \OT1/cmr/m/n/10 En met-tant en-sem-ble les deux re-for-mu-la-tions des sous-probl^^Remes sur les vari-ables $\OML/cmm/m/it/10 ^^N[]$ \OT1/cmr/m/n/10 et $\OML/cmm/m/it/10 ^^N[]$ \OT1/cmr/m/n/10 obtenues pr^^Sec^^Sedemment,
  []
 
-[6] [7]
-Underfull \hbox (badness 10000) in paragraph at lines 225--227
+[7] [8] [9]
+Underfull \hbox (badness 10000) in paragraph at lines 286--288
 
  []
 
-[8] (./main.bbl
+[10] (./main.bbl
 
 Package natbib Warning: Empty `thebibliography' environment on input line 8.
 
-) [9] (./main.aux) ) 
+) [11] (./main.aux)
+
+LaTeX Warning: There were undefined references.
+
+ ) 
 Here is how much of TeX's memory you used:
- 5550 strings out of 476025
- 84429 string characters out of 5790016
- 1871388 words of memory out of 5000000
- 25908 multiletter control sequences out of 15000+600000
+ 5558 strings out of 476025
+ 84541 string characters out of 5790016
+ 1873388 words of memory out of 5000000
+ 25916 multiletter control sequences out of 15000+600000
  525061 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 70i,15n,76p,443b,219s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 70i,13n,76p,437b,219s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-Output written on main.pdf (9 pages, 174742 bytes).
+Output written on main.pdf (11 pages, 181001 bytes).
 PDF statistics:
- 104 PDF objects out of 1000 (max. 8388607)
- 64 compressed objects within 1 object stream
+ 110 PDF objects out of 1000 (max. 8388607)
+ 68 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
