@@ -13,7 +13,7 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{definition}{Definition}
 \newtheorem{proposition}{Proposition}
-\title{PROJ - Calcul de Plus Court Chemin Robuste}
+\title{PROJ - Calcul de Plus Courts Chemins Robuste}
 \author{Arthur Divanovic, Axel Navarro}
 
 \begin{document}
@@ -40,21 +40,21 @@ Le problème de plus court chemin dans le cas statique peut se formuler de la fa
 
 \begin{align}
     \min_{x \in \{0,1\}^{|A|}} & \sum_{ij \in A} d_{ij} x_{ij} && \notag \\
-    \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1, && \forall i \in V \setminus{\{s,t\}}, \label{eq:constraint1} \\
-    &\sum_{i: ij \in A} x_{ij} \leq 1, && \forall j \in V \setminus{\{s,t\}}, \label{eq:constraint2} \\
-    &\sum_{i: is \in A} x_{is} = 0, \label{eq:constraint3} \\
-    &\sum_{j: sj \in A} x_{sj} = 1, \label{eq:constraint4} \\
-    &\sum_{i: ip \in A} x_{ip} = 1, \label{eq:constraint5} \\
-    &\sum_{j: pj \in A} x_{pj} = 0, \label{eq:constraint6} \\
-    &\sum_{ij \in A} x_{ij}(p_i + p_j) + p_s + p_t \leq 2S. \label{eq:constraint7}
+    \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1 && \forall i \in V \setminus{\{s,t\}} \label{eq:constraint1} \\
+    &\sum_{i: ij \in A} x_{ij} \leq 1 && \forall j \in V \setminus{\{s,t\}} \label{eq:constraint2} \\
+    &\sum_{i: is \in A} x_{is} = 0 \label{eq:constraint3} \\
+    &\sum_{j: sj \in A} x_{sj} = 1 \label{eq:constraint4} \\
+    &\sum_{i: ip \in A} x_{ip} = 1 \label{eq:constraint5} \\
+    &\sum_{j: pj \in A} x_{pj} = 0 \label{eq:constraint6} \\
+    &\sum_{ij \in A} x_{ij}(p_i + p_j) + p_s + p_t \leq 2S \label{eq:constraint7}
 \end{align}
-Étant donné le choix des variables $x$, la longueur d'un chemin s'écrit bien $\sum_{(i,j) \in A} d_{i,j} x_{i,j}$, qui est la somme des coûts d'emprunt des arêtes sélectionnées. Il reste à s'assurer que un tell choix de $x$ définit bien un chemin de $s$ à $t$.
+Étant donné le choix des variables $x$, la longueur d'un chemin s'écrit bien $\sum_{(i,j) \in A} d_{i,j} x_{i,j}$, qui est la somme des coûts d'emprunt des arêtes sélectionnées. Il reste à s'assurer que un tel choix de $x$ définit bien un chemin de $s$ à $t$.
 \\
 \\
 La contrainte (\ref{eq:constraint1}) assure que pour tout sommet $i$ différent de $s$ ou $t$, au plus une arête sélectionnée se termine en $i$. La contrainte (\ref{eq:constraint2}) assure de même que pour tout sommet différent de $s$ ou $t$, au plus une arête sélectionnée débute en ce sommet.
 \\
 \\
-Les chemins admissibles commençant par $s$, la contrainte (\ref{eq:constraint3}) assure que aucune arête sélectionnée n'arrive en $s$ et (\ref{eq:constraint4}) assure que exactement une arête partant de $s$ est selectionnée. De même, les chemins se terminent en $p$, ce qui est assuré par (\ref{eq:constraint5}) et (\ref{eq:constraint6}).
+Sachant que les chemins admissibles commencent par $s$, la contrainte (\ref{eq:constraint3}) assure que aucune arête sélectionnée n'arrive en $s$ et (\ref{eq:constraint4}) assure que exactement une arête partant de $s$ est selectionnée. De même, les chemins se terminent en $p$, ce qui est assuré par (\ref{eq:constraint5}) et (\ref{eq:constraint6}).
 \\
 \\
 Enfin, (\ref{eq:constraint7}) assure que le poids du chemin considéré est inférieur à $S$. Le facteur 2 provient du fait que l'on somme deux fois les poids des sommets $i$ différents de $s$ et $t$.
@@ -65,9 +65,17 @@ Pour le problème robuste, le paramètre $d$ peut désormais prendre des valeurs
 \[
 d \in \mathcal{U}^{1} := \left\{(d^{1}_{ij} = d_{ij}(1 + \delta^{1}_{ij}))_{ij \in A} \ \middle|\ \ \sum_{ij \in A} \delta^{1}_{ij} \leq d_1, \delta^{1}_{ij} \in [0, D_{ij}] \ \forall ij \in A\right\}.
 \]
+On pose:
+\[
+\Delta^{1} := \left\{(\delta^{1}_{ij})_{ij \in A} \ \middle|\ \ \sum_{ij \in A} \delta^{1}_{ij} \leq d_1, \delta^{1}_{ij} \in [0, D_{ij}] \ \forall ij \in A\right\}.
+\]
 De même, le paramètre $p$ peut désormais prendre des valeurs dans:
 \[
 p \in \mathcal{U}^{2} := \left\{(p^{2}_{i} = p_{i} + \delta^{2}_{i} \hat{p_i})_{i \in V} \ \middle|\ \ \sum_{i \in V} \delta^{2}_{i} \leq d_2, \delta^{2}_{i} \in [0, 2] \ \forall i \in V\right\}.
+\]
+On pose de même:
+\[
+\Delta^{2} := \left\{(\delta^{2}_{i})_{i \in V} \ \middle|\ \ \sum_{i \in V} \delta^{2}_{i} \leq d_2, \delta^{2}_{i} \in [0, 2] \ \forall i \in V\right\}.
 \]
 En prenant en compte cette nouvelle modélisation, la fonction objectif devient:
 $$\sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij}.$$
@@ -79,13 +87,9 @@ Les autres contraintes (\ref{eq:constraint1}) à (\ref{eq:constraint6}) ne sont 
 La modélisation robuste partant du principe que la réalisation de l'incertitude observée est le pire cas possible, l'objectif du problème devient donc en mettant tout bout à bout:
 
 \begin{align}
-  \min_{x \in \{0,1\}^{|A|}} \max_{\delta^{1} \geq 0 \hspace{3px}\delta^{2} \geq 0} & \sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij} && \notag \\
+  \min_{x \in \{0,1\}^{|A|}} \max_{\delta^{1} \in \Delta^{1}} & \sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij} && \notag \\
   \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \notag \\
-  &\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S \notag\\
-  &\sum_{ij \in A} \delta_{ij}^{1} \leq d_1, \label{eq:constraint8} \\
-  &\sum_{i \in V} \delta^{2}_{i} \leq d_2 \label{eq:constraint9} \\
-  &\delta_{ij}^{1} \leq D_{ij}, & \forall ij \in A \label{eq:constraint10} \\
-  &\delta^{2}_{i} \leq 2, & \forall i \in V \label{eq:constraint11}
+  &\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S & \forall \delta^{2} \in \Delta^{2} \tag{7'} \label{eq:constraint7prime}
 \end{align}
 
 
@@ -96,16 +100,16 @@ La modélisation robuste partant du principe que la réalisation de l'incertitud
 En posant $\eta$ une nouvelle variable tel que :
 
 \begin{align}
-  \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} \notag
+  \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij}, \ \forall \delta^{1} \in \Delta^{1}. \notag
 \end{align}
 
 On peut reformuler l'objectif du problème robuste : 
 
 \begin{align}
-  \min_{x, \hspace{1px} \delta^{1}, \hspace{1px} \delta^{2}, \hspace{1px} \eta} & \sum_{ij \in A} d_{ij} x_{ij} + \eta && \notag \\
-  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \quad (\ref{eq:constraint7}) \quad (\ref{eq:constraint8}) \quad (\ref{eq:constraint9}) \quad (\ref{eq:constraint10}) \quad (\ref{eq:constraint11})\notag \\
-  & \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} \label{eq:constraint12} \\
-  & \delta^{1}, \hspace{1px} \delta^{2}, \hspace{1px} \eta \geq 0 \notag \\
+  \min_{x, \hspace{1px} \hspace{1px} \hspace{1px} \eta} & \sum_{ij \in A} d_{ij} x_{ij} + \eta && \notag \\
+  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \quad (\ref{eq:constraint7prime}) \notag \\
+  & \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} & \forall \delta^{1} \in \Delta^{1} \label{eq:constraint12} \\
+  & \eta \geq 0 \notag \\
   & x \in \{0,1\}^{|A|} \notag
 \end{align}
 
@@ -119,7 +123,7 @@ Nous les choisissons vides :
 \end{align}
 
 \subsubsection{Sous-problèmes}
-Le problème maitre s'écrit :
+Le problème maître s'écrit :
 
 \begin{align}
   \min_{x, \hspace{1px} \eta } & \sum_{ij \in A} d_{ij} x_{ij} + \eta && \tag{MP} \label{eq:master-problem} \\
@@ -130,19 +134,19 @@ Le problème maitre s'écrit :
   & x \in \{0,1\}^{|A|} \notag
 \end{align}
 
-La résolution de (\ref{eq:master-problem}) nous donne une solution ($x^*, \eta^*$)
+La résolution de (\ref{eq:master-problem}) nous donne une solution ($x^*, \eta^*$).
 
 On résout ensuite les deux sous-problèmes (\ref{eq:sous-pb-a}) et (\ref{eq:sous-pb-b}): 
 \begin{align}
   \max_{\delta^{1} \geq 0} & \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x^*_{ij} - \eta^* \tag{SP-A} \label{eq:sous-pb-a}\\
   \textbf{s.t: } & \sum_{ij \in A} \delta_{ij}^{1} \leq d_1 \notag \\
-  &\delta_{ij}^{1} \leq D_{ij}, & \forall ij \in A \notag \\
+  &\delta_{ij}^{1} \leq D_{ij} & \forall ij \in A \notag \\
 \end{align}
 
 \begin{align}
   \max_{\delta^{2} \geq 0} & \sum_{ij \in A} x^*_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} - 2S \tag{SP-B} \label{eq:sous-pb-b}\\
   \textbf{s.t: } & \sum_{i \in V} \delta^{2}_{i} \leq d_2 \notag \\
-  &\delta^{2}_{i} \leq 2, & \forall i \in V \notag
+  &\delta^{2}_{i} \leq 2 & \forall i \in V \notag
 \end{align}
 
 La résolution de (\ref{eq:sous-pb-a}) et (\ref{eq:sous-pb-b}) nous donne deux solutions optimales $\delta^{1*}$ et $\delta^{2*}$. \\
@@ -151,7 +155,7 @@ Si la valeur optimale de l'objectif de (\ref{eq:sous-pb-a}) est strictement posi
 Si la valeur optimale de l'objectif de (\ref{eq:sous-pb-b}) est strictement positive, alors on ajoute $\delta^{2*}$ à $\mathcal{U}^{2*}$.
 
 \subsubsection{Condition d'optimalité du problème maitre}
-Une solution du problème maitre ($x^*, \eta^*$) est optimale si la valeur optimale de l'objectif de (\ref{eq:sous-pb-a}) et (\ref{eq:sous-pb-b}) est négative pour ($x^*, \eta^*$).
+Une solution du problème maitre ($x^*, \eta^*$) est optimale si les valeurs optimales des objectifs de (\ref{eq:sous-pb-a}) et (\ref{eq:sous-pb-b}) sont négatives (au sens large) pour ($x^*, \eta^*$).
 
 \subsubsection{Coupes ajoutées}
 
@@ -176,8 +180,8 @@ Le problème interne lié aux variables $\delta^{1}_{ij}$ est donc:
 
 \begin{align}
   \max_{\delta^{1}\geq 0} & \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} \tag{SP1} \label{eq:sous-pb-delta1}  \\
-  \textbf{s.t: } &\sum_{ij \in A} \delta_{ij}^{1} \leq d_1, \notag \\
-  &\delta_{ij}^{1} \leq D_{ij}, && \forall ij \in A \notag
+  \textbf{s.t: } &\sum_{ij \in A} \delta_{ij}^{1} \leq d_1 \notag \\
+  &\delta_{ij}^{1} \leq D_{ij} && \forall ij \in A \notag
 \end{align}
 
 \subsubsection{Dualisation du sous problème lié à $\delta^{1}$}
@@ -188,31 +192,27 @@ Nous allons attribuer la variable duale $\alpha \geq 0$ à la première contrain
 Le problème (\ref{eq:sous-pb-delta1}) est linéaire et admet une solution admissible triviale telle que $\forall ij, \delta^{1}_{ij} = 0$. Par dualité forte, ce problème peut se réécrire:
 \begin{align}
   \min_{\alpha, \beta \geq 0} & \alpha d_1  + \sum_{ij \in A} \beta_{ij} D_{ij} \tag{D-SP1} \label{eq:dual-sous-pb-delta1}  \\
-  \textbf{s.t: } &d_{ij} x_{ij} \leq \alpha + \beta_{ij}, && \forall ij \in A \notag
+  \textbf{s.t: } &d_{ij} x_{ij} \leq \alpha + \beta_{ij} && \forall ij \in A \notag
 \end{align}
 
 \subsubsection{Reformulation de la contrainte robuste}
 
-La contrainte robuste (\ref{eq:contrainte_robuste}), se réécrit:
+La contrainte robuste (\ref{eq:constraint7prime}), se réécrit:
 
 \begin{equation}
 \label{eq:ref_contrainte_robuste}
-  \sum_{ij \in A} x_{ij}(p_i + p_j) + p_s + p_t +  (\delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j} + \delta_{s}^{2} \hat{p_s} + \delta_{t}^{2} \hat{p_t}) \leq 2S,\ \forall \delta^{2} \geq 0: 
-\begin{cases}
-  \sum_{i \in V} \delta^{2}_{i} \leq d_2 \\
-  \delta^{2}_{i} \leq 2, \forall i \in V 
-\end{cases} 
+  \sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + p_t + \delta_{s}^{2} \hat{p_s} + \delta_{t}^{2} \hat{p_t} \leq 2S,\ \forall \delta^{2} \in \Delta^{2}.
 \end{equation}
 
 
 \subsubsection{Sous problème lié à $\delta^{2}$}
 
-Le fait que la contrainte (\ref{eq:ref_contrainte_robuste}) doivent être vérifié pour tout $\delta^{2}$ peut se réécrire en faisant apparaître un problème de maximisation sur $\delta^{2}$.
+Le fait que la contrainte (\ref{eq:ref_contrainte_robuste}) doit être vérifiée pour tout $\delta^{2}$ peut se réécrire en faisant apparaître un problème de maximisation sur $\delta^{2}$.
 \begin{align}
   \sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + 
     \max_{\delta^{2} \geq 0} & \sum_{ij \in A} x_{ij}(\delta^{2}_{i} \hat{p_i} + \delta^{2}_{j} \hat{p_j}) + \delta^{2}_{s} \hat{p_s} + \delta^{2}_{t} \hat{p_t} \leq 2S \\
      \textbf{s.t: } & \sum_{i \in V} \delta^{2}_{i} \leq d_2 \notag \\
-     & \delta^{2}_{i} \leq 2, && \forall i \in V \notag
+     & \delta^{2}_{i} \leq 2 && \forall i \in V \notag
 \end{align}
 
 
@@ -223,17 +223,17 @@ Réécrivons le sous-problème sur la variable $\delta^{2}$ ci-dessus:
 \begin{align}
     \max_{\delta^{2} \geq 0} & \sum_{ij \in A} x_{ij}(\delta^{2}_{i} \hat{p_i} + \delta^{2}_{j} \hat{p_j}) + \delta^{2}_{s} \hat{p_s} + \delta^{2}_{t} \hat{p_t} \tag{SP2} \label{eq:sous-prob-2}\\
      \textbf{s.t: } & \sum_{i \in V} \delta^{2}_{i} \leq d_2 \notag \\
-     & \delta^{2}_{i} \leq 2, && \forall i \in V \notag
+     & \delta^{2}_{i} \leq 2 && \forall i \in V \notag
 \end{align}
 
-Dans le problème de maximisation (\ref{eq:sous-prob-2}), nous attribuerons à la première contrainte la variable duale $\gamma \geq 0$, ainsi que les variables duales $\sigma_{i}$ pour les contraintes indexées par $V$. En dualisant ce problème, nous obtenons:
+Dans le problème de maximisation (\ref{eq:sous-prob-2}), nous attribuerons à la première contrainte la variable duale $\gamma \geq 0$, ainsi que les variables duales $\sigma_{i} \geq 0$ pour les contraintes indexées par $V$. En dualisant ce problème, nous obtenons:
 \begin{align}
   \min_{\gamma, \sigma \geq 0} & \gamma d_2 + 2 \sum_{i \in V} \sigma_i \tag{D-SP2} \label{eq:dual-sous-prob-2}\\
-   \textbf{s.t: } & \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i \notag \\
+   \textbf{s.t: } & \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i && \forall i \in V \setminus{\{s,t\}} \notag \\
    & \sum_{j: sj \in A} x_{sj} \hat{p_s} + \hat{p_s} \leq \gamma + \sigma_s \notag \\
    & \sum_{j: jt \in A} x_{jt} \hat{p_t} + \hat{p_t} \leq \gamma + \sigma_t \notag
 \end{align}
-Ainsi, la contrainte (\ref{eq:contrainte_robuste}) est vérifiée si et seulement si: 
+Ainsi, la contrainte (\ref{eq:constraint7prime}) est vérifiée si et seulement si: 
 $$\exists \gamma, \sigma \geq 0 : 
 \begin{cases}
   \sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + \gamma d_2 + 2 \sum_{i \in V} \sigma_i  \leq 2S\\
@@ -249,51 +249,53 @@ En mettant ensemble les deux reformulations des sous-problèmes sur les variable
 
 \begin{align}
   \min_{x, \alpha, \beta, \gamma, \sigma} & \ \ \ \sum_{ij \in A} d_{ij} x_{ij} + \alpha d_1 + \sum_{ij \in A} \beta_{ij} D_{ij} && \notag \\
-  \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1, && \forall i \in V \setminus{\{s,t\}} \notag \\
-  &\sum_{i: ij \in A} x_{ij} \leq 1, && \forall j \in V \setminus{\{s,t\}} \notag\\
-  &\sum_{i: is \in A} x_{is} = 0, \notag \\
-  &\sum_{j: sj \in A} x_{sj} = 1, \notag \\
-  &\sum_{i: ip \in A} x_{ip} = 1, \notag \\
-  &\sum_{j: pj \in A} x_{pj} = 0, \notag \\
-  &\sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + \gamma d_2 + 2 \sum_{i \in V} \sigma_i  \leq 2S \notag \\
-  & \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i, && \forall i \in V \setminus{\{s,t\}} \\
+  \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1 && \forall i \in V \setminus{\{s,t\}} \notag \\
+  &\sum_{i: ij \in A} x_{ij} \leq 1 && \forall j \in V \setminus{\{s,t\}} \notag\\
+  &\sum_{i: is \in A} x_{is} = 0 \notag \\
+  &\sum_{j: sj \in A} x_{sj} = 1 \notag \\
+  &\sum_{i: ip \in A} x_{ip} = 1 \notag \\
+  &\sum_{j: pj \in A} x_{pj} = 0 \notag \\
+  &\sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + \gamma d_2 + 2 \sum_{i \in V} \sigma_i \leq 2S \notag \\
+  & \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i && \forall i \in V \setminus{\{s,t\}} \\
   & \sum_{j: sj \in A} x_{sj} \hat{p_s} + \hat{p_s} \leq \gamma + \sigma_s \\
   & \sum_{j: jt \in A} x_{jt} \hat{p_t} + \hat{p_t} \leq \gamma + \sigma_t
 \end{align}
 
-
-
-\newpage
-
-\section{Exercice 2: Résolution Numérique}
-
-\subsection{Question 2.1}
-
-\subsection{Question 2.2}
-
-\subsection{Question 2.3}
+On retrouve ainsi un programme linéaire en nombre entiers, équivalent au problème robuste.
 
 
 
+% \newpage
 
-\newpage
-\section*{Conclusion}
-\addcontentsline{toc}{section}{Conclusion}
+% \section{Exercice 2: Résolution Numérique}
 
+% \subsection{Question 2.1}
 
+% \subsection{Question 2.2}
 
-\vspace{2cm}
-Le code correspondant à ce projet est disponible sur le lien GitHub ci-dessous:
-\\
-\begin{center}
-https://github.com/ArthurDivanovic/
-\end{center}
+% \subsection{Question 2.3}
 
 
 
-\newpage
-\bibliography{Bibliography.bib}
-\bibliographystyle{plainnat} %pour la bibliography
-% \bibliographystyle{unsrt}
+
+% \newpage
+% \section*{Conclusion}
+% \addcontentsline{toc}{section}{Conclusion}
+
+
+
+% \vspace{2cm}
+% Le code correspondant à ce projet est disponible sur le lien GitHub ci-dessous:
+% \\
+% \begin{center}
+% https://github.com/ArthurDivanovic/
+% \end{center}
+
+
+
+% \newpage
+% \bibliography{Bibliography.bib}
+% \bibliographystyle{plainnat} %pour la bibliography
+% % \bibliographystyle{unsrt}
 
 \end{document}
