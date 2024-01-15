@@ -40,22 +40,21 @@ Le problème de plus court chemin dans le cas statique peut se formuler de la fa
 
 \begin{align}
     \min_{x \in \{0,1\}^{|A|}} & \sum_{ij \in A} d_{ij} x_{ij} && \notag \\
-    \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1 && \forall i \in V \setminus{\{s,t\}} \label{eq:constraint1} \\
-    &\sum_{i: ij \in A} x_{ij} \leq 1 && \forall j \in V \setminus{\{s,t\}} \label{eq:constraint2} \\
+    \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} = \sum_{j: ji \in A} x_{ji} && \forall i \in V \setminus{\{s,t\}} \label{eq:constraint1} \\
     &\sum_{i: is \in A} x_{is} = 0 \label{eq:constraint3} \\
     &\sum_{j: sj \in A} x_{sj} = 1 \label{eq:constraint4} \\
     &\sum_{i: ip \in A} x_{ip} = 1 \label{eq:constraint5} \\
     &\sum_{j: pj \in A} x_{pj} = 0 \label{eq:constraint6} \\
     &\sum_{ij \in A} x_{ij}(p_i + p_j) + p_s + p_t \leq 2S \label{eq:constraint7}
 \end{align}
+
 Étant donné le choix des variables $x$, la longueur d'un chemin s'écrit bien $\sum_{(i,j) \in A} d_{i,j} x_{i,j}$, qui est la somme des coûts d'emprunt des arêtes sélectionnées. Il reste à s'assurer que un tel choix de $x$ définit bien un chemin de $s$ à $t$.
 \\
 \\
-La contrainte (\ref{eq:constraint1}) assure que pour tout sommet $i$ différent de $s$ ou $t$, au plus une arête sélectionnée se termine en $i$. La contrainte (\ref{eq:constraint2}) assure de même que pour tout sommet différent de $s$ ou $t$, au plus une arête sélectionnée débute en ce sommet.
+La contrainte (\ref{eq:constraint1}) assure que les arrêtes sélectionnées par la variable $x$ forment bien un chemin par conservation du flot.
 \\
 \\
 Sachant que les chemins admissibles commencent par $s$, la contrainte (\ref{eq:constraint3}) assure que aucune arête sélectionnée n'arrive en $s$ et (\ref{eq:constraint4}) assure que exactement une arête partant de $s$ est selectionnée. De même, les chemins se terminent en $p$, ce qui est assuré par (\ref{eq:constraint5}) et (\ref{eq:constraint6}).
-\\
 \\
 Enfin, (\ref{eq:constraint7}) assure que le poids du chemin considéré est inférieur à $S$. Le facteur 2 provient du fait que l'on somme deux fois les poids des sommets $i$ différents de $s$ et $t$.
 
@@ -88,8 +87,8 @@ La modélisation robuste partant du principe que la réalisation de l'incertitud
 
 \begin{align}
   \min_{x \in \{0,1\}^{|A|}} \max_{\delta^{1} \in \Delta^{1}} & \sum_{ij \in A} d_{ij} x_{ij} + d_{ij} \delta_{ij}^{1} x_{ij} && \notag \\
-  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \notag \\
-  &\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S & \forall \delta^{2} \in \Delta^{2} \tag{7'} \label{eq:constraint7prime}
+  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \notag \\
+  &\sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S & \forall \delta^{2} \in \Delta^{2} \tag{6'} \label{eq:constraint7prime}
 \end{align}
 
 
@@ -107,7 +106,7 @@ On peut reformuler l'objectif du problème robuste :
 
 \begin{align}
   \min_{x, \hspace{1px} \hspace{1px} \hspace{1px} \eta} & \sum_{ij \in A} d_{ij} x_{ij} + \eta && \notag \\
-  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \quad (\ref{eq:constraint7prime}) \notag \\
+  \textbf{s.t: }  & (\ref{eq:constraint1}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \quad (\ref{eq:constraint7prime}) \notag \\
   & \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} & \forall \delta^{1} \in \Delta^{1} \label{eq:constraint12} \\
   & \eta \geq 0 \notag \\
   & x \in \{0,1\}^{|A|} \notag
@@ -127,7 +126,7 @@ Le problème maître s'écrit :
 
 \begin{align}
   \min_{x, \hspace{1px} \eta } & \sum_{ij \in A} d_{ij} x_{ij} + \eta && \tag{MP} \label{eq:master-problem} \\
-  \textbf{s.t: } & (\ref{eq:constraint1}) \quad (\ref{eq:constraint2}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \notag \\
+  \textbf{s.t: } & (\ref{eq:constraint1}) \quad (\ref{eq:constraint3}) \quad (\ref{eq:constraint4}) \quad (\ref{eq:constraint5}) \quad (\ref{eq:constraint6}) \notag \\
   & \eta \geq \sum_{ij \in A} d_{ij} \delta_{ij}^{1} x_{ij} & \forall \delta^{1} \in \mathcal{U}^{1*} \\
   & \sum_{ij \in A} x_{ij}(p_i + p_j + \delta_{i}^{2} \hat{p_i} + \delta_{j}^{2} \hat{p_j}) + p_s + \delta_{s}^{2} \hat{p_s} + p_t + \delta_{t}^{2} \hat{p_t} \leq 2S & \forall \delta^{2} \in \mathcal{U}^{2*} \\
   & \eta \geq 0 \notag \\
@@ -249,8 +248,7 @@ En mettant ensemble les deux reformulations des sous-problèmes sur les variable
 
 \begin{align}
   \min_{x, \alpha, \beta, \gamma, \sigma} & \ \ \ \sum_{ij \in A} d_{ij} x_{ij} + \alpha d_1 + \sum_{ij \in A} \beta_{ij} D_{ij} && \notag \\
-  \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} \leq 1 && \forall i \in V \setminus{\{s,t\}} \notag \\
-  &\sum_{i: ij \in A} x_{ij} \leq 1 && \forall j \in V \setminus{\{s,t\}} \notag\\
+  \textbf{s.t: }  &\sum_{j: ij \in A} x_{ij} = \sum_{j: ji \in A} x_{ji} && \forall i \in V \setminus{\{s,t\}} \notag \\
   &\sum_{i: is \in A} x_{is} = 0 \notag \\
   &\sum_{j: sj \in A} x_{sj} = 1 \notag \\
   &\sum_{i: ip \in A} x_{ip} = 1 \notag \\
