@@ -14,8 +14,11 @@ function ant_colony(g::Graph, param::AntParameters)
     a = param.alpha
     b = param.beta
 
+    best_dist = Inf
+    best_path = []
+
     #tau initialization
-    tau = Matrix{Int}(undef, n, n)
+    tau = Matrix{Float64}(undef, n, n)
     for i = 1:n
         for j = 1:n
             if g.d[i,j] != 0
@@ -29,15 +32,12 @@ function ant_colony(g::Graph, param::AntParameters)
             i = g.s
             path = [i]
             
+            #Visited vertices
             visited = Dict()
             visited[i] = true
-            
-            # path_weight = g.p[i]
-            # path_ph = [g.ph[i]]
-            
 
             #Add new vertice in path
-            while i != g.T
+            while i != g.t
 
                 #Probability distribution
                 distrib = Dict()
@@ -50,36 +50,55 @@ function ant_colony(g::Graph, param::AntParameters)
                 end
                 
                 #Random draw
-                p = rand() * sum(values(distrib))
-                cumulative_prob = 0.0
-                for (j,prob) in distrib
-                    cumulative_prob += prob
-                    if p <= cumulative_prob
-                        push!(path, j)
-                        # push!(path_ph, g.ph[j])
-                        # path_weight += g.p[j]
-                        visited[j] = true
-                        i = j
-                        break
+                if !isempty(distrib)
+                    p = rand() * sum(values(distrib))
+                    cumulative_prob = 0
+                    for (j,prob) in distrib
+                        cumulative_prob += prob
+                        if p <= cumulative_prob
+                            push!(path, j)
+                            visited[j] = true
+                            i = j
+                            break
+                        end
                     end
+                else
+                    break
                 end
             end
 
+            #Path not completed
+            if i != g.t 
+                continue
+            end
+
+            #Worst path distance
             dist = robust_path_eval(g, path)
+
+            #Worst path weight 
             path_weight = robust_constraint_eval(g, path)
 
+            #println("t = $t, k = $k, path = $path, dist = $dist, path_weight = $path_weight")
+
+            #Feasible path
             if path_weight <= g.S
                 for idx = 1:length(path)-1
                     i = path[idx]
                     j = path[idx+1]
-                    tau[i,j] += dist
+                    tau[i,j] += param.Q / dist
+                end
+
+                #Best solution improvement
+                if dist < best_dist
+                    best_dist = dist
+                    best_path = path
                 end
             end
-
-
         end
-        tau[i,j] *= (1-param.rho)
+        tau .*= (1-param.rho)
     end
+
+    return best_dist, best_path
 end
 
 

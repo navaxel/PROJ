@@ -75,13 +75,11 @@ function dual_resolution(g::Graph)
 
     if feasibleSolutionFound
         path = [s]
-        path_weight = g.p[s]
         i = s
         while i != t
             for j = 1:n
                 if value(x[i,j]) == 1
                     push!(path, j)
-                    path_weight += g.p[j]
                     i = j 
                     break
                 end
@@ -89,11 +87,10 @@ function dual_resolution(g::Graph)
         end
         
         obj_value = JuMP.objective_value(model)
-        return obj_value, path, path_weight
+        return obj_value, path
         # println(g.name)
         # println("Objective value : ", JuMP.objective_value(model))
         # println("Path from ", g.s, " to ", g.t, " : ", path)
-        # println("Path weight : ", path_weight, " <= S = ", g.S)
     end
     
     return nothing, nothing, nothing
