@@ -43,20 +43,20 @@ function dual_resolution(g::Graph)
     #Constraint 7
     @constraint(model, sum(x[i,j]*(g.p[i] + g.p[j]) for i = 1:n for j = 1:n if g.d[i,j] != 0) + 2*sum(sigma[i] for i = 1:n) + gamma*g.d2 <= 2*g.S - g.p[s] - g.p[t])
 
-    #Constraint 14
+    #Constraint 13
     for i = 1:n
         if i != s && i != t
-            @constraint(model, g.ph[i]*sum(x[i,j] for j = 1:n if g.d[i,j] != 0) + g.ph[i]*sum(x[j,i] for j = 1:n if g.d[i,j] != 0) <= gamma + sigma[i])
+            @constraint(model, g.ph[i] * (sum(x[i,j] for j = 1:n if g.d[i,j] != 0) + sum(x[j,i] for j = 1:n if g.d[i,j] != 0)) <= gamma + sigma[i])
         end
     end
 
+    #Constraint 14
+    @constraint(model, g.ph[s] * (1 + sum(x[s,j] for j = 1:n if g.d[s,j] != 0)) <= gamma + sigma[s])
+
     #Constraint 15
-    @constraint(model, g.ph[s]*sum(x[s,j] for j = 1:n if g.d[s,j] != 0) + g.ph[s]<= gamma + sigma[s])
+    @constraint(model, g.ph[t] * (1 + sum(x[i,t] for i = 1:n if g.d[i,t] != 0)) <= gamma + sigma[t])
 
     #Constraint 16
-    @constraint(model, g.ph[t]*sum(x[i,t] for i = 1:n if g.d[i,t] != 0) + g.ph[t] <= gamma + sigma[t])
-
-    #Constraint 17 
     for i = 1:n
         for j = 1:n
             if g.d[i,j] != 0
