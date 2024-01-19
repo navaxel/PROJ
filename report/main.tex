@@ -255,8 +255,9 @@ En mettant ensemble les deux reformulations des sous-problèmes sur les variable
   &\sum_{j: pj \in A} x_{pj} = 0 \notag \\
   &\sum_{ij \in A} x_{ij} (p_i + p_j) + p_s + p_t + \gamma d_2 + 2 \sum_{i \in V} \sigma_i \leq 2S \notag \\
   & \sum_{j: ij \in A} x_{ij} \hat{p_i} + \sum_{j: ji \in A} x_{ji} \hat{p_i} \leq \gamma + \sigma_i && \forall i \in V \setminus{\{s,t\}} \\
-  & \sum_{j: sj \in A} x_{sj} \hat{p_s} + \hat{p_s} \leq \gamma + \sigma_s \\
-  & \sum_{j: jt \in A} x_{jt} \hat{p_t} + \hat{p_t} \leq \gamma + \sigma_t
+  & \hat{p_s}(1 + \sum_{j: sj \in A} x_{sj})  \leq \gamma + \sigma_s \\
+  & \hat{p_t} (1 + \sum_{j: jt \in A} x_{jt}) \leq \gamma + \sigma_t \\
+  & d_{ij} x_{ij} \leq \alpha + \beta{ij} && \forall ij \in A 
 \end{align}
 
 On retrouve ainsi un programme linéaire en nombre entiers, équivalent au problème robuste.
