@@ -32,13 +32,11 @@ function cutting_planes_resolution(g::Graph)
 
     # Recover optimal path
     path = [s]
-    path_weight = g.p[s]
     i = s
     while i != t
         for j = 1:n
             if master_x[i,j] == 1
                 push!(path, j)
-                path_weight += g.p[j]
                 i = j 
                 break
             end
@@ -46,7 +44,7 @@ function cutting_planes_resolution(g::Graph)
     end
     obj_value = master_obj
     
-    return obj_value, path, path_weight
+    return obj_value, path
 end
 
 
