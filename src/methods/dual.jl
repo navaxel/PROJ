@@ -1,4 +1,6 @@
-function dual_resolution(g::Graph)
+function dual_resolution(g::Graph, save=false::Bool)
+    start_time = time()
+
     n = g.n
     s = g.s
     t = g.t
@@ -70,6 +72,8 @@ function dual_resolution(g::Graph)
 
     optimize!(model)
 
+    resolution_time = time() - start_time
+
     feasibleSolutionFound = primal_status(model) == MOI.FEASIBLE_POINT
     isOptimal = termination_status(model) == MOI.OPTIMAL
 
@@ -87,18 +91,13 @@ function dual_resolution(g::Graph)
         end
         
         obj_value = JuMP.objective_value(model)
-        return obj_value, path
-        # println(g.name)
-        # println("Objective value : ", JuMP.objective_value(model))
-        # println("Path from ", g.s, " to ", g.t, " : ", path)
+
+        if save
+            save_results("Dual", g, path, resolution_time)
+        end
+
+        return obj_value, path, resolution_time
     end
     
-    return nothing, nothing, nothing
-    # for i = 1:n
-    #     for j = 1:n
-    #         if value(x[i,j]) == 1
-    #             println((i,j))
-    #         end
-    #     end
-    # end
+    return nothing, nothing
 end

@@ -1,4 +1,5 @@
-function cutting_planes_resolution(g::Graph)
+function cutting_planes_resolution(g::Graph, save=false::Bool)
+    start_time = time()
     n = g.n
     s = g.s
     t = g.t
@@ -43,8 +44,14 @@ function cutting_planes_resolution(g::Graph)
         end
     end
     obj_value = master_obj
+
+    resolution_time = time() - start_time
+
+    if save
+        save_results("CuttingPlanes", g, path, resolution_time)
+    end
     
-    return obj_value, path
+    return obj_value, path, resolution_time
 end
 
 
