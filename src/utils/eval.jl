@@ -63,12 +63,3 @@ function static_constraint_eval(g::Graph, path::Vector{Int})
     end
     return path_weight
 end
-
-function display_results(g::Graph, path::Vector{Int})
-    println(g.name)
-    println("Path from ", g.s, " to ", g.t, " : ", path)
-    println("Static path distance : ", static_path_eval(g, path))
-    println("Static path weight (S = $(g.S)): ", static_constraint_eval(g, path))
-    println("Robust path distance : ", robust_path_eval(g, path))
-    println("Robust path weight (S = $(g.S)): ", robust_constraint_eval(g, path))
-end
