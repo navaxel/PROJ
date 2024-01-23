@@ -1,4 +1,4 @@
-function dual_resolution(g::Graph, save=false::Bool)
+function dual_resolution(g::Graph, save=false::Bool, time_limit=nothing::Union{Nothing,Int})
     start_time = time()
 
     n = g.n
@@ -6,6 +6,10 @@ function dual_resolution(g::Graph, save=false::Bool)
     t = g.t
 
     model = Model(CPLEX.Optimizer)
+
+    if !isnothing(time_limit)
+        set_time_limit_sec(model, time_limit)
+    end
 
     @variable(model, x[1:n,1:n] >= 0, binary=true)
     @variable(model, alpha >= 0)
