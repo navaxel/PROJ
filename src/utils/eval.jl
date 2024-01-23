@@ -14,12 +14,15 @@ function robust_path_eval(g::Graph, path::Vector{Int})
     i = 1
     evaluation = 0
 
-    while d1 >= 0 && i <= length(sorted_edges)
+    for i = 1:length(sorted_edges)
         edge = sorted_edges[i]
         delta = min(g.D[edge[1], edge[2]], d1)
         evaluation += g.d[edge[1], edge[2]] * (1 + delta)
-        i += 1
-        d1 -= delta
+        if delta >= d1
+            d1 = 0
+        else
+            d1 -= delta
+        end
     end
 
     return evaluation
@@ -35,14 +38,15 @@ function robust_constraint_eval(g::Graph, path::Vector{Int})
 
     d2 = g.d2
     i = 1
-    evaluation = 0
+    evaluation = sum(g.p[path])
 
-    while d2 >= 0 && i <= length(sorted_nodes)
+    while d2 > 0
         node = sorted_nodes[i]
         delta = min(2, d2)
-        evaluation += g.p[node] + delta * g.ph[i]
+        evaluation += delta * g.ph[node]
         i += 1
         d2 -= delta
+    
     end
 
     return evaluation
