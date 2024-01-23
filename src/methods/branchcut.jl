@@ -22,8 +22,8 @@ function branch_and_cut(g::Graph, save=false::Bool)
 
     resolution_time = time() - start_time
 
-    if save
-        save_results("CuttingPlanes", g, path, resolution_time)
+    if save && length(path) > 1
+        save_results("BranchCut", g, path, resolution_time)
     end
     
     return obj_value, path, resolution_time
