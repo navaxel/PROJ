@@ -25,7 +25,12 @@ function ant_colony(g::Graph, param::AntParameters, save=false::Bool)
     for i = 1:n
         for j = 1:n
             if g.d[i,j] != 0
-                tau[i,j] = param.tau0
+                if j == g.t
+                    tau[i,j] = 1000 * param.tau0
+                else
+                    tau[i,j] = param.tau0
+                end
+                
             end
         end
     end

@@ -7,6 +7,7 @@ include("utils/results.jl")
 include("methods/dual.jl")
 include("methods/cutting.jl")
 include("methods/dijkstra.jl")
-include("methods/heuristic.jl")
+include("methods/antcolony.jl")
 include("methods/branchcut.jl")
 include("methods/static.jl")
+
