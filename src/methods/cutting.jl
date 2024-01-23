@@ -1,4 +1,4 @@
-function cutting_planes_resolution(g::Graph, save=false::Bool)
+function cutting_planes_resolution(g::Graph, save=false::Bool, time_limit=nothing::Union{Nothing,Int})
     start_time = time()
     n = g.n
     s = g.s
@@ -8,12 +8,17 @@ function cutting_planes_resolution(g::Graph, save=false::Bool)
     u_1_prime = []
     u_2_prime = []
 
+    # Stopping criterions
     separation_verified = false
+    if isnothing(time_limit)
+        time_limit = Inf
+    end
 
     master_x = zeros(Int, n, n)
     master_obj = 0
 
-    while !separation_verified
+    while !separation_verified && time_limit >= 0
+        loop_start = time()
         master_obj, master_x, master_eta = master_problem(g, u_1_prime, u_2_prime)
 
         obj1, delta1 = sp_A(g, master_x, master_eta)
@@ -29,6 +34,9 @@ function cutting_planes_resolution(g::Graph, save=false::Bool)
         if obj1 <= 0 && obj2 <= 0
             separation_verified = true
         end
+
+        loop_end = time()
+        time_limit -= (loop_end - loop_start)
     end 
 
     # Recover optimal path

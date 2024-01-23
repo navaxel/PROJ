@@ -1,36 +1,6 @@
-function branch_and_cut(g::Graph, save=false::Bool)
+function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothing::Union{Nothing,Int})
     start_time = time()
-    n = g.n
-    s = g.s
-    t = g.t
 
-    opt_obj, x_opt, eta_opt = branch_and_cut_resolution(g)
-
-    # Recover optimal path
-    path = [s]
-    i = s
-    while i != t
-        for j = 1:n
-            if x_opt[i,j] == 1
-                push!(path, j)
-                i = j 
-                break
-            end
-        end
-    end
-    obj_value = opt_obj
-
-    resolution_time = time() - start_time
-
-    if save && length(path) > 1
-        save_results("BranchCut", g, path, resolution_time)
-    end
-    
-    return obj_value, path, resolution_time
-end
-
-    
-function branch_and_cut_resolution(g::Graph)
     n = g.n
     s = g.s
     t = g.t
@@ -39,6 +9,9 @@ function branch_and_cut_resolution(g::Graph)
     #Model
     model = Model(CPLEX.Optimizer)
     set_optimizer_attribute(model, "CPX_PARAM_SCRIND", 0)
+    if !isnothing(time_limit)
+        set_time_limit_sec(model, time_limit)
+    end
 
     #Variables
     @variable(model, x[1:n,1:n] >= 0, binary=true)
@@ -122,9 +95,28 @@ function branch_and_cut_resolution(g::Graph)
 
         eta_opt = value(eta)
         opt_obj = JuMP.objective_value(model)
+
+        # Recover optimal path
+        path = [s]
+        i = s
+        while i != t
+            for j = 1:n
+                if x_opt[i,j] == 1
+                    push!(path, j)
+                    i = j 
+                    break
+                end
+            end
+        end
+        obj_value = opt_obj
+
+        resolution_time = time() - start_time
+
+        if save && length(path) > 1
+            save_results("BranchCut", g, path, resolution_time)
+        end
     
-        return opt_obj, x_opt, eta_opt
+        return obj_value, path, resolution_time
     end
-    
     return nothing, nothing, nothing
 end
