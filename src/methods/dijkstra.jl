@@ -42,3 +42,19 @@ function get_path(predecessors, start, target)
 
     return path
 end
+
+function robust_constraint_dijkstra(g::Graph)
+    dist, path, resolution_time = static_dijkstra(g)
+    g_copy = g
+    while robust_constraint_eval(g_copy, path) > g.S
+        g_copy = deepcopy(g_copy)
+        #The heaviest weight within the path
+        i_to_delete = path[argmax(g.p[path] + g.ph[path])]
+        for j = 1:g.n
+            g_copy.d[i_to_delete,j] = 0
+            g_copy.d[j,i_to_delete] = 0
+        end
+        dist, path, resolution_time = static_dijkstra(g_copy)
+    end
+    return robust_path_eval(g, path), path, resolution_time
+end

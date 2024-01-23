@@ -1,11 +1,12 @@
 struct AntParameters
-    m       ::Int
-    alpha   ::Float64
-    beta    ::Float64
-    T       ::Int
-    Q       ::Float64
-    rho     ::Float64
-    tau0    ::Float64
+    m           ::Int
+    alpha       ::Float64
+    beta        ::Float64
+    T           ::Int
+    Q           ::Float64
+    rho         ::Float64
+    tau0        ::Float64
+    init_path   ::Union{Nothing,Vector{Int}}
 end
 
 function ant_colony(g::Graph, param::AntParameters, save=false::Bool)
@@ -20,12 +21,19 @@ function ant_colony(g::Graph, param::AntParameters, save=false::Bool)
     best_path = []
 
     #tau initialization
-    tau = Matrix{Float64}(undef, n, n)
+    tau = zeros(Float64, n, n)
     for i = 1:n
         for j = 1:n
             if g.d[i,j] != 0
                 tau[i,j] = param.tau0
             end
+        end
+    end
+    
+    #Path initialization
+    if !isnothing(param.init_path)
+        for i = 1:length(param.init_path)-1
+            tau[param.init_path[i], param.init_path[i+1]] = 200 * param.tau0
         end
     end
 
@@ -81,6 +89,7 @@ function ant_colony(g::Graph, param::AntParameters, save=false::Bool)
             path_weight = robust_constraint_eval(g, path)
 
             #println("t = $t, k = $k, path = $path, dist = $dist, path_weight = $path_weight")
+            println("t = $t, k = $k, path_length = $(length(path)), dist = $dist, path_weight = $path_weight")
 
             #Feasible path
             if path_weight <= g.S
