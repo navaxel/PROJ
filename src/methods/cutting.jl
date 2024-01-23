@@ -19,6 +19,7 @@ function cutting_planes_resolution(g::Graph, save=false::Bool, time_limit=nothin
 
     while !separation_verified && time_limit >= 0
         loop_start = time()
+
         master_obj, master_x, master_eta = master_problem(g, u_1_prime, u_2_prime)
 
         obj1, delta1 = sp_A(g, master_x, master_eta)
@@ -26,17 +27,18 @@ function cutting_planes_resolution(g::Graph, save=false::Bool, time_limit=nothin
             push!(u_1_prime, delta1)
         end
 
-        obj2, delta2 = sp_A(g, master_x, master_eta)
+        obj2, delta2 = sp_B(g, master_x, master_eta)
         if obj2 > 0
             push!(u_2_prime, delta2)
         end
 
-        if obj1 <= 0 && obj2 <= 0
+        if obj1 <= 1e-6 && obj2 <= 1e-6
             separation_verified = true
         end
 
         loop_end = time()
         time_limit -= (loop_end - loop_start)
+
     end 
 
     # Recover optimal path
@@ -129,7 +131,9 @@ function master_problem(g::Graph, u_1_prime::Vector{Any}, u_2_prime::Vector{Any}
         x_opt = zeros(Int, n, n)
         for i = 1:n
             for j = 1:n
-                x_opt[i,j] = value(x[i,j])
+                if value(x[i,j]) >= 1 - 1e-6
+                    x_opt[i,j] = 1
+                end
             end
         end
 
@@ -150,7 +154,6 @@ function sp_A(g::Graph, x::Matrix{Int}, eta::Float64)
 
     model = Model(CPLEX.Optimizer)
     set_optimizer_attribute(model, "CPX_PARAM_SCRIND", 0)
-
 
     #Variables
     @variable(model, delta[1:n,1:n] >= 0)
