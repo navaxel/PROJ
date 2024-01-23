@@ -103,5 +103,5 @@ function dual_resolution(g::Graph, save=false::Bool, time_limit=nothing::Union{N
         return obj_value, path, resolution_time
     end
     
-    return nothing, nothing
+    return nothing, nothing, nothing
 end
