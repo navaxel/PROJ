@@ -47,7 +47,7 @@ function cutting_planes_resolution(g::Graph, save=false::Bool)
 
     resolution_time = time() - start_time
 
-    if save
+    if save && length(path) > 1
         save_results("CuttingPlanes", g, path, resolution_time)
     end
     

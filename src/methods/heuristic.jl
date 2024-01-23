@@ -111,7 +111,7 @@ function ant_colony(g::Graph, param::AntParameters, save=false::Bool)
 
     resolution_time = time() - start_time
 
-    if save 
+    if save && length(best_path) > 1
         save_results("AntColony", g, best_path, resolution_time)
     end
 

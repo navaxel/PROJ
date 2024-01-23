@@ -92,7 +92,7 @@ function dual_resolution(g::Graph, save=false::Bool)
         
         obj_value = JuMP.objective_value(model)
 
-        if save
+        if save && length(path) > 1
             save_results("Dual", g, path, resolution_time)
         end
 
