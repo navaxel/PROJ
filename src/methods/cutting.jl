@@ -23,12 +23,12 @@ function cutting_planes_resolution(g::Graph, save=false::Bool, time_limit=nothin
         master_obj, master_x, master_eta = master_problem(g, u_1_prime, u_2_prime)
 
         obj1, delta1 = sp_A(g, master_x, master_eta)
-        if obj1 > 0
+        if obj1 >= 1e-6
             push!(u_1_prime, delta1)
         end
 
         obj2, delta2 = sp_B(g, master_x, master_eta)
-        if obj2 > 0
+        if obj2 >= 1e-6
             push!(u_2_prime, delta2)
         end
 
