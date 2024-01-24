@@ -3,3 +3,33 @@ p : [12, 2, 14, 6, 15]
 t : 0.02
 o : 7076.52
 
+m : CuttingPlanes
+p : [12, 2, 9, 6, 15]
+t : 60.27
+o : 7076.52
+
+m : CuttingPlanes
+p : [12, 2, 9, 6, 15]
+t : 2.66
+o : 7076.52
+
+m : CuttingPlanes
+p : [12, 2, 9, 6, 15]
+t : 0.28
+o : 7076.52
+
+m : CuttingPlanes
+p : [12, 2, 9, 6, 15]
+t : 0.31
+o : 7076.52
+
+m : CuttingPlanes
+p : [12, 2, 14, 6, 15]
+t : 0.25
+o : 7076.52
+
+m : CuttingPlanes
+p : [12, 2, 14, 6, 15]
+t : 0.21
+o : 7076.52
+
