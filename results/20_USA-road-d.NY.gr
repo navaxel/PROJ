@@ -8,3 +8,23 @@ p : [2, 1, 7, 9]
 t : 0.02
 o : 9454.47
 
+m : CuttingPlanes
+p : [2, 1, 17, 9]
+t : 0.26
+o : 9454.47
+
+m : CuttingPlanes
+p : [2, 1, 17, 9]
+t : 0.26
+o : 9454.47
+
+m : CuttingPlanes
+p : [2, 14, 7, 9]
+t : 0.21
+o : 9454.47
+
+m : CuttingPlanes
+p : [2, 14, 7, 9]
+t : 0.2
+o : 9454.47
+
