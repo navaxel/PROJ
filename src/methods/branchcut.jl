@@ -1,3 +1,16 @@
+function warm_start(g::Graph)
+    x_init = zeros(Int, g.n, g.n)
+
+    obj_value, path, resolution_time = robust_dijkstra(g)
+
+    for i = 1:length(path)-1
+        x_init[path[i],path[i+1]] = 1
+    end
+
+    return x_init
+end
+
+
 function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothing::Union{Nothing,Int})
     start_time = time()
 
@@ -57,7 +70,9 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
             x_val = zeros(Int, n, n)
             for i = 1:n
                 for j = 1:n
-                    x_val[i,j] = callback_value(cb_data, x[i,j])
+                    if callback_value(cb_data, x[i,j]) >= 1 - 1e-6
+                        x_val[i,j] = 1
+                    end
                 end
             end
             eta_val = callback_value(cb_data, eta)
@@ -80,6 +95,11 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
 
     set_attribute(model, MOI.LazyConstraintCallback(), callback_function)
 
+
+    # Warm start
+    # x_init = warm_start(g)
+    # set_start_value.(x, x_init)
+
     optimize!(model)
 
     feasibleSolutionFound = primal_status(model) == MOI.FEASIBLE_POINT
@@ -89,7 +109,9 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
         x_opt = zeros(Int, n, n)
         for i = 1:n
             for j = 1:n
-                x_opt[i,j] = value(x[i,j])
+                if value(x[i,j]) >= 1 - 1e-6
+                    x_opt[i,j] = 1
+                end
             end
         end
 
@@ -112,7 +134,7 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
 
         resolution_time = time() - start_time
 
-        if save && length(path) > 1
+        if save && length(path) > 1 && robust_constraint_eval(g, path) <= g.S
             save_results("BranchCut", g, path, resolution_time)
         end
     
