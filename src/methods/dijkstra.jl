@@ -156,9 +156,9 @@ function robust_dijkstra(g::Graph, save=false::Bool)
         g_copy.d = alpha * norm * g.d + (1-alpha) * p_dist
         dist, path, resolution_time2 = static_dijkstra(g_copy)
 
-        println("alpha : ", alpha)
-        println("path : ", path)
-        println("weight : ", robust_constraint_eval(g, path))
+        # println("alpha : ", alpha)
+        # println("path : ", path)
+        # println("weight : ", robust_constraint_eval(g, path))
         
         resolution_time += resolution_time2
     end
