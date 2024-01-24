@@ -8,7 +8,7 @@ mutable struct Graph
     d2                  ::Int
     p                   ::Vector{Int}
     ph                  ::Vector{Int}
-    d                   ::Matrix{Int}
+    d                   ::Matrix{Float64}
     D                   ::Matrix{Float64}
 end
 
@@ -68,3 +68,26 @@ function parse_file(file_name::String)::Graph
     return Graph(file_name, n, s, t, S, d1, d2, p, ph, d, D)                  
 end 
 
+
+function has_path_with_removed_vertex(g::Graph, vertex_to_remove::Int)
+    visited = falses(g.n)
+    stack = [g.s]
+
+    while !isempty(stack)
+        current_vertex = pop!(stack)
+        if current_vertex == g.t
+            return true 
+        end
+
+        if !visited[current_vertex]
+            visited[current_vertex] = true
+            for neigh = 1:g.n
+                if g.d[current_vertex, neigh] != 0 && neigh != vertex_to_remove
+                    push!(stack, neigh)
+                end
+            end
+        end
+    end
+
+    return false 
+end
