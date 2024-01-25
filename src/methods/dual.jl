@@ -191,16 +191,25 @@ function dual_relax_resolution(g::Graph, save=false::Bool, time_limit=nothing::U
     isOptimal = termination_status(model) == MOI.OPTIMAL
 
     if feasibleSolutionFound
-        x_opt = zeros(Float64, n, n)
-        for i = 1:n
+        path = [s]
+        i = s
+        while i != t
             for j = 1:n
-                x_opt[i,j] = value(x[i,j])
+                if value(x[i,j]) == 1
+                    push!(path, j)
+                    i = j 
+                    break
+                end
             end
         end
         
         obj_value = JuMP.objective_value(model)
 
-        return obj_value, x_opt, resolution_time
+        if save && length(path) > 1
+            save_results("DualRelax", g, path, resolution_time)
+        end
+
+        return obj_value, path, resolution_time
     end
     
     return nothing, nothing, nothing
