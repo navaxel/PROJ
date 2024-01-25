@@ -57,7 +57,7 @@ function cutting_planes_resolution(g::Graph, save=false::Bool, time_limit=nothin
 
     resolution_time = time() - start_time
 
-    if save && length(path) > 1
+    if save && length(path) > 1 && robust_constraint_eval(g, path) <= g.S
         save_results("CuttingPlanes", g, path, resolution_time)
     end
     
