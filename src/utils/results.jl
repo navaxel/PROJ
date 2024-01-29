@@ -17,6 +17,14 @@ function save_results(method::String, g::Graph, path::Vector{Int}, resolution_ti
     close(file)
 end
 
+function save_relax_results(method::String, g::Graph, objective::Float64, resolution_time::Float64)
+    file = open("results/$(g.name)", "a")
+    r_t = round(resolution_time, digits=2)
+    write(file, "m : $method\np : []\nt : $r_t\no : $objective\n\n")
+
+    close(file)
+end
+
 function get_best_results(g::Graph)
     best_objectives = Dict{String, Float64}()
     best_paths = Dict{String, Vector{Int}}()
@@ -34,7 +42,11 @@ function get_best_results(g::Graph)
             current_method = tokens[2]
 
         elseif tokens[1] == "p"
-            current_path = parse.(Int, split(tokens[2][2:end-1], ","))
+            if tokens[2] == "[]"
+                current_path = []
+            else
+                current_path = parse.(Int, split(tokens[2][2:end-1], ","))
+            end
         
         elseif tokens[1] == "t"
             current_time = parse(Float64, tokens[2])
