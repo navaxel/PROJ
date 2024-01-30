@@ -21,7 +21,7 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
 
     #Model
     model = Model(CPLEX.Optimizer)
-    set_optimizer_attribute(model, "CPX_PARAM_SCRIND", 0)
+    #set_optimizer_attribute(model, "CPX_PARAM_SCRIND", 0)
     if !isnothing(time_limit)
         set_time_limit_sec(model, time_limit)
     end
@@ -58,7 +58,11 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
     #Constraint 6
     @constraint(model, sum(x[t,j] for j = 1:n if g.d[t,j] != 0) == 0)
 
+    # Adding static constraint
+    @constraint(model, sum(x[i,j] * (g.p[i] + g.p[j]) for i = 1:n for j = 1:n if g.d[i,j] != 0) + g.p[s] + g.p[t] <= 2 * g.S)
+            
     #Objective
+    #@objective(model, Min, sum(g.d[i,j]*x[i,j] for i = 1:n for j = 1:n if g.d[i,j] != 0) + eta + sum(x[i,j] * 50 * i for i = 1:n for j = 1:n if g.d[i,j] != 0))
     @objective(model, Min, sum(g.d[i,j]*x[i,j] for i = 1:n for j = 1:n if g.d[i,j] != 0) + eta)
 
     # Callbacks
@@ -81,20 +85,23 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
             obj2, delta2 = sp_B(g, x_val, eta_val)
             
             if obj1 >= 1e-6
-                cstr = @build_constraint(sum(g.d[i,j]*x[i,j]*delta1[i,j] for i = 1:n for j = 1:n if g.d[i,j] != 0) <= eta)
-                MOI.submit(model, MOI.LazyConstraint(cb_data), cstr)    
+                cstr1 = @build_constraint(sum(g.d[i,j]*x[i,j]*delta1[i,j] for i = 1:n for j = 1:n if g.d[i,j] != 0) <= eta)
+                MOI.submit(model, MOI.LazyConstraint(cb_data), cstr1)    
             end
 
-            if obj1 >= 1e-6
-                cstr = @build_constraint(sum(x[i,j] * (g.p[i] + g.p[j] + delta2[i] * g.ph[i] + delta2[j] * g.ph[j]) for i = 1:n for j = 1:n if g.d[i,j] != 0) + 
+            if obj2 >= 1e-6
+                cstr2 = @build_constraint(sum(x[i,j] * (g.p[i] + g.p[j] + delta2[i] * g.ph[i] + delta2[j] * g.ph[j]) for i = 1:n for j = 1:n if g.d[i,j] != 0) + 
                 g.p[s] + delta2[s] * g.ph[s] + g.p[t] + delta2[t] * g.ph[t] <= 2 * g.S)
-                MOI.submit(model, MOI.LazyConstraint(cb_data), cstr)
+                MOI.submit(model, MOI.LazyConstraint(cb_data), cstr2)
             end
+
+            if obj1 <= 1e-6 && obj2 <= 1e-6
+                println("should terminate")
+            end 
         end
     end 
 
     set_attribute(model, MOI.LazyConstraintCallback(), callback_function)
-
 
     # Warm start
     # x_init = warm_start(g)
