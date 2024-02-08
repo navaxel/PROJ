@@ -11,7 +11,7 @@ function warm_start(g::Graph)
 end
 
 
-function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothing::Union{Nothing,Int})
+function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothing::Union{Nothing,Int}, warmstart=nothing::Union{Nothing,Bool})
     start_time = time()
 
     n = g.n
@@ -104,8 +104,10 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
     set_attribute(model, MOI.LazyConstraintCallback(), callback_function)
 
     # Warm start
-    # x_init = warm_start(g)
-    # set_start_value.(x, x_init)
+    if warmstart
+        x_init = warm_start(g)
+        set_start_value.(x, x_init)
+    end
 
     optimize!(model)
 
