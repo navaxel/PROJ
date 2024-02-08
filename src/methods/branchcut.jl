@@ -62,7 +62,7 @@ function branch_and_cut_resolution(g::Graph, save=false::Bool, time_limit=nothin
     @constraint(model, sum(x[i,j] * (g.p[i] + g.p[j]) for i = 1:n for j = 1:n if g.d[i,j] != 0) + g.p[s] + g.p[t] <= 2 * g.S)
             
     #Objective
-    @objective(model, Min, sum(g.d[i,j]*x[i,j] for i = 1:n for j = 1:n if g.d[i,j] != 0) + eta + sum(x[i,j] * 5 * i for i = 1:n for j = 1:n if g.d[i,j] != 0))
+    @objective(model, Min, sum(g.d[i,j]*x[i,j] for i = 1:n for j = 1:n if g.d[i,j] != 0) + eta + sum(x[i,j] * 100 * i for i = 1:n for j = 1:n if g.d[i,j] != 0))
     #@objective(model, Min, sum(g.d[i,j]*x[i,j] for i = 1:n for j = 1:n if g.d[i,j] != 0) + eta)
 
     # Callbacks
